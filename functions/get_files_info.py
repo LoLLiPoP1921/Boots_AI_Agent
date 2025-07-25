@@ -61,22 +61,18 @@ def write_file(working_directory, file_path, content):
     except Exception as e:
         return f"Error: {e}"
     
-def run_python_file(working_directory, file_path, args=None, opt=None):
+def run_python_file(working_directory, file_path, args=[]):
     full_path = os.path.join(working_directory, file_path)
-    
-    if args is None:
-        args = []
 
     if not os.path.abspath(full_path).startswith(os.path.abspath(working_directory)):
-        return f'Error: Cannot write "{str(file_path)}" as it is outside the permitted working directory'
+        return f'Error: Cannot execute "{str(file_path)}" as it is outside the permitted working directory'
     if not os.path.exists(full_path):
-        return f'Error: File "{file_path}" not found.'
+        return f'Error: File "{str(file_path)}" not found.'
     if not file_path.endswith(".py"):
-        return f'Error: "{file_path}" is not a Python file.'
+        return f'Error: "{str(file_path)}" is not a Python file.'
+    
     try:
         cmd = ["python", file_path] + args
-        if opt:
-            cmd += [f"--opt={opt}"]
 
         result = subprocess.run(cmd, timeout=30, capture_output=True, text=True, cwd=working_directory)
         return_code = result.returncode
